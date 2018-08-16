@@ -79,6 +79,7 @@ gulp.task('changelog', function() {
   var dest = argv.dest || 'CHANGELOG.md';
   var toHtml = !!argv.html;
   return makeChangelog(argv).then(function(log) {
+    console.log(log);
     if (toHtml) {
       log = marked(log, {
         gfm: true
@@ -95,16 +96,24 @@ function makeChangelog(options) {
   var from = options.from;
   var version = options.version || pkg.version;
   var deferred = q.defer();
-  changelog({
-    repository: 'https://github.com/ionic-team/ionic',
+  var config = {
+    repository: 'https://github.com/wakefern/ionic-v1',
     version: version,
     subtitle: subtitle,
     file: file,
     from: from
-  }, function(err, log) {
-    if (err) deferred.reject(err);
-    else deferred.resolve(log);
-  });
+  };
+  console.log(config);
+    changelog(config, function(err, log) {
+      if (err) {
+        console.log(err);
+        deferred.reject(err);
+      }
+      else {
+        console.log('resolved');
+        deferred.resolve(log);
+      }
+    });
   return deferred.promise;
 }
 
